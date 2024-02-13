@@ -13,6 +13,7 @@ This Python script retrieves address coordinates data from the Kinmen Urban Deve
 - requests
 - selenium
 - loguru
+- pyproj
 
 ## Installation
 1. Clone the repository:
