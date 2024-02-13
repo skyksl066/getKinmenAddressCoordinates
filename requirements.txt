@@ -1,4 +1,4 @@
 loguru
 requests
-selenium
 pyproj
+beautifulsoup4

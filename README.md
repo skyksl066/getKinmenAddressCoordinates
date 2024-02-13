@@ -5,6 +5,7 @@ This Python script retrieves address coordinates data from the Kinmen Urban Deve
 
 ## Features
 - Retrieves town, road, lane, alley, and door information from the Kinmen Urban Development Bureau website.
+- Converts coordinates from TWD97 to WGS84.
 - Logs information about the retrieval process.
 - Writes the retrieved coordinates to a CSV file.
 
