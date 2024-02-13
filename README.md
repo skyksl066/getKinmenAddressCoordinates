@@ -18,7 +18,7 @@ This Python script retrieves address coordinates data from the Kinmen Urban Deve
 1. Clone the repository:
 
     ```
-    git clone https://github.com/your-username/get-kinmen-address-coordinates.git
+    git clone https://github.com/skyksl066/getKinmenAddressCoordinates.git
     ```
 
 2. Install dependencies:
