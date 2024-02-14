@@ -5,6 +5,7 @@ This Python script retrieves address coordinates data from the Kinmen Urban Deve
 
 ## Features
 - Retrieves town, road, lane, alley, and door information from the Kinmen Urban Development Bureau website.
+- Uses multi-threading to process multiple towns concurrently.
 - Converts coordinates from TWD97 to WGS84.
 - Logs information about the retrieval process.
 - Writes the retrieved coordinates to a CSV file.
@@ -38,7 +39,17 @@ This Python script retrieves address coordinates data from the Kinmen Urban Deve
 
 2. The retrieved coordinates will be saved in a CSV file named `data.csv`.
 
+## Configuration
+
+- `MAX_RETRIES`: Maximum number of retries for failed requests.
+- `API`: URL for the API used to retrieve data.
+- `LOG_PATH`: Path to the log file.
+- `CSV_FILE`: Path to the CSV file to save coordinates.
+- `FIELDNAMES`: Names of the fields in the CSV file.
+- `RESUME_FILE`: Path to the file to store processed locations.
+- `BATCH_SIZE`: Number of towns to process concurrently.
+
 ## Notes
-- Modify `MAX_RETRIES` in `app.py` to adjust the maximum number of retries for failed requests.
-- Change the `LOG_PATH` variable in `app.py` to specify the path for the log file.
-- The program saves its progress in `resume.txt`, allowing it to resume from where it left off in case of interruption.
+
+- Ensure internet connectivity for the program to work.
+- The program may take some time to complete processing, depending on the number of towns and roads.

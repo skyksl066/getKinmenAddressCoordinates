@@ -13,6 +13,7 @@ import csv
 from pyproj import Proj, Transformer
 from bs4 import BeautifulSoup
 import os
+import threading
 
 # 失敗重試次數
 MAX_RETRIES = 2
@@ -26,6 +27,8 @@ CSV_FILE = 'data.csv'
 FIELDNAMES = ['FULL_ADDR', 'LATITUDE', 'LONGITUDE']
 # 保存處理位置的文件名
 RESUME_FILE = 'resume.txt'
+# 每次處理兩個鄉鎮
+BATCH_SIZE = 2
 
 
 def Twd97ToWGS84(ox, oy):
@@ -72,7 +75,40 @@ def getTowns():
     towns = [option.get('value') for option in options if option.get('value')]
     loguru.logger.debug(towns)
     return towns
+
+
+def searchRoads(txt='', retry_count=0):
+    loguru.logger.info(f'搜尋路 查詢條件：{txt}')
+    response = requests.post(API, data={'CMD': 'GETROADLIST', 'VAL': txt})
+    return check_status(response, 'ROAD', retry_count, lambda count: searchRoads(txt, count))
+
+
+def getSubLmCode(type, retry_count=0):
+    # type 1~15
+    loguru.logger.info(f'取得小類 大類：{type}')
+    response = requests.post(API, data={'CMD': 'GETSUBLMCODE', 'VAL': type})
+    return check_status(response, 'SubType', retry_count, lambda count: getSubLmCode(type, count))
     
+
+def getLandMarkList(type, subtype, retry_count=0):
+    loguru.logger.info(f'取得地標 大類：{type} 小類:{subtype}')
+    response = requests.post(API, data={'CMD': 'GETLANDMARKLIST', 'VAL': type, 'CODE': subtype})
+    try:
+        # 使用.json()方法解析JSON數據
+        json_data = response.json()
+    except Exception as e:
+        loguru.logger.debug(f'Error decoding JSON: {e}.')
+        loguru.logger.debug(f'Response text: {response.text}')
+        if retry_count < MAX_RETRIES:
+            loguru.logger.info('10秒後再試一次')
+            time.sleep(10)
+            return getLandMarkList(type, subtype, retry_count + 1)
+        else:
+            loguru.logger.info('已達最大重試次數，放棄嘗試')
+            loguru.logger.error(f'type: {type} subtype: {subtype}')
+            return None
+    return json_data if json_data else None
+
 
 def getRoads(town, retry_count=0):
     """
@@ -94,7 +130,7 @@ def getRoads(town, retry_count=0):
     loguru.logger.info(f'取得路 鄉鎮：{town}')
     # 定義POST請求的URL和payload（要發送的數據）
     # 發送POST請求
-    response = requests.post(API, data={'CMD': 'GETADDRROAD', 'VAL': town})
+    response = session.post(API, data={'CMD': 'GETADDRROAD', 'VAL': town})
     return check_status(response, 'ROAD', retry_count, lambda count: getRoads(town, count))
 
 
@@ -120,7 +156,7 @@ def getLanes(town, road, retry_count=0):
     loguru.logger.info(f'取得巷 鄉鎮：{town} 門牌：{road}')
     # 定義POST請求的URL和payload（要發送的數據）
     # 發送POST請求
-    response = requests.post(API, data={'CMD': 'GETADDRLANE', 'VAL': town, 'CODE': road})
+    response = session.post(API, data={'CMD': 'GETADDRLANE', 'VAL': town, 'CODE': road})
     return check_status(response, 'LANE', retry_count, lambda count: getLanes(town, road, count))
 
 
@@ -148,7 +184,7 @@ def getAlleys(town, road, lane, retry_count=0):
     loguru.logger.info(f'取得弄 鄉鎮：{town} 門牌：{road} 巷：{lane}')
     # 定義POST請求的URL和payload（要發送的數據）
     # 發送POST請求
-    response = requests.post(API, data={'CMD': 'GETADDRALLEY', 'VAL': town, 'CODE': road, 'OTHER': lane})
+    response = session.post(API, data={'CMD': 'GETADDRALLEY', 'VAL': town, 'CODE': road, 'OTHER': lane})
     return check_status(response, 'ALLEY', retry_count, lambda count: getAlleys(town, road, lane, count))
 
 
@@ -178,7 +214,7 @@ def getDoors(town, road, lane, alley, retry_count=0):
     loguru.logger.info(f'取得號 鄉鎮：{town} 門牌：{road} 巷：{lane} 弄：{alley}')
     # 定義POST請求的URL和payload（要發送的數據）
     # 發送POST請求
-    response = requests.post(API, data={'CMD': 'GETADDRDOOR', 'VAL': town, 'CODE': road, 'OTHER': lane, 'MORE': alley})
+    response = session.post(API, data={'CMD': 'GETADDRDOOR', 'VAL': town, 'CODE': road, 'OTHER': lane, 'MORE': alley})
     return check_status(response, 'NUMBER', retry_count, lambda count: getDoors(town, road, lane, alley, count))
 
 
@@ -210,13 +246,13 @@ def getXY(town, road, lane, alley, door, retry_count=0):
     loguru.logger.info(f'取得座標 鄉鎮：{town} 門牌：{road} 巷：{lane} 弄：{alley} 號：{door}')
     # 定義POST請求的URL和payload（要發送的數據）
     # 發送POST請求
-    response = requests.post(API, data={'CMD': 'GETXY', 'VAL': town, 'CODE': road, 'OTHER': lane, 'MORE': alley, 'THEN': door})
+    response = session.post(API, data={'CMD': 'GETXY', 'VAL': town, 'CODE': road, 'OTHER': lane, 'MORE': alley, 'THEN': door})
     try:
         # 使用.json()方法解析JSON數據
         json_data = response.json()
     except Exception as e:
-        loguru.logger.error(f'Error decoding JSON: {e}.')
-        loguru.logger.error(f'Response text: {response.text}')
+        loguru.logger.debug(f'Error decoding JSON: {e}.')
+        loguru.logger.debug(f'Response text: {response.text}')
         if retry_count < MAX_RETRIES:
             loguru.logger.info('10秒後再試一次')
             time.sleep(10)
@@ -256,8 +292,8 @@ def check_status(response, key, retry_count, callback):
         loguru.logger.debug(arr)
         return arr
     except Exception as e:
-        loguru.logger.error(f'Error decoding JSON: {e}.')
-        loguru.logger.error(f'Response text: {response.text}')
+        loguru.logger.debug(f'Error decoding JSON: {e}.')
+        loguru.logger.debug(f'Response text: {response.text}')
         if retry_count < MAX_RETRIES:
             loguru.logger.info('10秒後再試一次')
             time.sleep(10)
@@ -314,40 +350,51 @@ def save_resume(town, road, lane, alley, door):
         writer.writerow([town, road, lane, alley, door])
 
 
+def process_towns(town):
+    roads = getRoads(town)
+    for road in roads:
+        lanes = getLanes(town, road)
+        for lane in lanes:
+            alleys = getAlleys(town, road, lane)
+            for alley in alleys:
+                doors = getDoors(town, road, lane, alley)
+                for door in doors:
+                    # 如果已處理過此位置，則跳過
+                    position = ','.join([town, road, lane, alley, door])
+                    if position in processed_positions:
+                        loguru.logger.info(f'{door} 已下載跳過')
+                        continue
+                    
+                    dist = getXY(town, road, lane, alley, door)
+                    if dist:
+                        xy = Twd97ToWGS84(dist['X'], dist['Y'])
+                        addr = {'FULL_ADDR': dist['FULL_ADDR'], 'LATITUDE': round(xy[0], 5), 'LONGITUDE': round(xy[1], 5)}
+                        with open(CSV_FILE, 'a', newline='', encoding='utf-8') as file:
+                            writer = csv.DictWriter(file, fieldnames=FIELDNAMES)
+                            # 如果文件不存在，寫入表頭
+                            if file.tell() == 0:
+                                writer.writeheader()
+                            writer.writerow(addr)
+                        loguru.logger.debug(addr)
+                    # 保存處理位置
+                    save_resume(town, road, lane, alley, door)
+
+
 if __name__ == '__main__':
     loguru.logger.add(LOG_PATH, rotation='1 day', level='ERROR')
     loguru.logger.info('Start get coordinates')
-    
+    session = requests.Session()
     # 讀取所有已處理的位置
     processed_positions = read_resume()
     towns = getTowns()
-    
-    for town in towns:
-        roads = getRoads(town)
-        for road in roads:
-            lanes = getLanes(town, road)
-            for lane in lanes:
-                alleys = getAlleys(town, road, lane)
-                for alley in alleys:
-                    doors = getDoors(town, road, lane, alley)
-                    for door in doors:
-                        # 如果已處理過此位置，則跳過
-                        position = ','.join([town, road, lane, alley, door])
-                        if position in processed_positions:
-                            loguru.logger.info(f'{door} 已下載跳過')
-                            continue
-                        
-                        dist = getXY(town, road, lane, alley, door)
-                        if dist:
-                            xy = Twd97ToWGS84(dist['X'], dist['Y'])
-                            addr = {'FULL_ADDR': dist['FULL_ADDR'], 'LATITUDE': round(xy[0], 5), 'LONGITUDE': round(xy[1], 5)}
-                            with open(CSV_FILE, 'a', newline='', encoding='utf-8') as file:
-                                writer = csv.DictWriter(file, fieldnames=FIELDNAMES)
-                                # 如果文件不存在，寫入表頭
-                                if file.tell() == 0:
-                                    writer.writeheader()
-                                writer.writerow(addr)
-                            loguru.logger.debug(addr)
-                        # 保存處理位置
-                        save_resume(town, road, lane, alley, door)
+    for i in range(0, len(towns), BATCH_SIZE):
+        batch_towns = towns[i:i+BATCH_SIZE]
+        threads = []
+        for town in batch_towns:
+            thread = threading.Thread(target=process_towns, args=(town,))
+            thread.start()
+            threads.append(thread)
+
+        for thread in threads:
+            thread.join()
     loguru.logger.info('Finish')
