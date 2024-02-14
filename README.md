@@ -12,9 +12,9 @@ This Python script retrieves address coordinates data from the Kinmen Urban Deve
 ## Dependencies
 - Python 3.x
 - requests
-- selenium
 - loguru
 - pyproj
+- beautifulsoup4
 
 ## Installation
 1. Clone the repository:
@@ -38,5 +38,7 @@ This Python script retrieves address coordinates data from the Kinmen Urban Deve
 
 2. The retrieved coordinates will be saved in a CSV file named `data.csv`.
 
-## Configuration
-- Modify the `api` variable in the script to change the API endpoint if necessary.
+## Notes
+- Modify `MAX_RETRIES` in `app.py` to adjust the maximum number of retries for failed requests.
+- Change the `LOG_PATH` variable in `app.py` to specify the path for the log file.
+- The program saves its progress in `resume.txt`, allowing it to resume from where it left off in case of interruption.
