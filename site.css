@@ -26,6 +26,7 @@
 
     #dt-search-0 {
         width: 100% !important;
+        margin-left: 0;
     }
 
     label[for="dt-search-0"] {
@@ -52,5 +53,5 @@ input[type="search"] {
     text-align: center;
     pointer-events: none;
     color: #aaa;
-    margin-left: 0.5rem;
+    /*margin-left: 0.5rem;*/
 }
