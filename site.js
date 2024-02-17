@@ -93,14 +93,14 @@
                 let width = $(document).width();
                 if (width <= 767.98) {
                     if (info.page == 0) {
-                        $('.swiper-button-prev').hide();
+                        $('.swiper-button-prev-area').hide();
                     } else {
-                        $('.swiper-button-prev').show();
+                        $('.swiper-button-prev-area').show();
                     }
                     if (info.page == info.pages - 1) {
-                        $('.swiper-button-next').hide();
+                        $('.swiper-button-next-area').hide();
                     } else {
-                        $('.swiper-button-next').show();
+                        $('.swiper-button-next-area').show();
                     }
                     $('#my_table_wrapper .dt-paging').hide();
                 } else {
@@ -119,14 +119,14 @@
             let width = $(document).width();
             if (width <= 767.98) {
                 if (info.page == 0) {
-                    $('.swiper-button-prev').hide();
+                    $('.swiper-button-prev-area').hide();
                 } else {
-                    $('.swiper-button-prev').show();
+                    $('.swiper-button-prev-area').show();
                 }
                 if (info.page == info.pages - 1) {
-                    $('.swiper-button-next').hide();
+                    $('.swiper-button-next-area').hide();
                 } else {
-                    $('.swiper-button-next').show();
+                    $('.swiper-button-next-area').show();
                 }
                 $('#my_table_wrapper .dt-paging').hide();
             } else {
@@ -178,11 +178,11 @@
     ];
 
     let table = buildTable('data/address.json', addr_columns);
-    $('.swiper-button-prev').on('click', () => {
+    $('.swiper-button-prev-area').on('click', () => {
         table.page('previous').draw(false);
     })
 
-    $('.swiper-button-next').on('click', () => {
+    $('.swiper-button-next-area').on('click', () => {
         table.page('next').draw(false);
     });
 
@@ -191,14 +191,14 @@
         let width = $(document).width();
         if (width <= 767.98) {
             if (info.page == 0) {
-                $('.swiper-button-prev').hide();
+                $('.swiper-button-prev-area').hide();
             } else {
-                $('.swiper-button-prev').show();
+                $('.swiper-button-prev-area').show();
             }
             if (info.page == info.pages - 1) {
-                $('.swiper-button-next').hide();
+                $('.swiper-button-next-area').hide();
             } else {
-                $('.swiper-button-next').show();
+                $('.swiper-button-next-area').show();
             }
             $('#my_table_wrapper .dt-paging').hide();
         } else {

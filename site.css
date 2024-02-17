@@ -1,9 +1,29 @@
-.swiper-button-prev {
+/*.swiper-button-prev {
     display: none;
 }
 
 .swiper-button-next {
     display: none;
+}*/
+
+.swiper-button-prev-area {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: calc(var(--swiper-navigation-size)/ 44 * 38);
+    display: none;
+    cursor: pointer;
+}
+
+.swiper-button-next-area {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: calc(var(--swiper-navigation-size)/ 44 * 38);
+    display: none;
+    cursor: pointer;
 }
 
 @media (max-width: 767.98px) {
@@ -12,11 +32,11 @@
         padding-right: 30px;
     }
 
-    .swiper-button-prev {
+    .swiper-button-prev-area {
         display: block;
     }
 
-    .swiper-button-next {
+    .swiper-button-next-area {
         display: block;
     }
 
