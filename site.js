@@ -75,7 +75,9 @@
     const buildTable = function (url, columns) {
         let t = new DataTable('#my_table', {
             stateSave: true,
-            responsive: true,
+            responsive: {
+                details: false,
+            },
             lengthChange: false,
             rowReorder: false,
             language: {
