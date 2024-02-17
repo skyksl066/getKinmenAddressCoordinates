@@ -177,7 +177,7 @@
         { title: 'SUB', data: 'SUB' }
     ];
 
-    let table = buildTable('data/data.json', addr_columns);
+    let table = buildTable('data/address.json', addr_columns);
     $('.swiper-button-prev').on('click', () => {
         table.page('previous').draw(false);
     })
