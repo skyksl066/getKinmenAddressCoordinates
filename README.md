@@ -49,6 +49,14 @@ This Python script retrieves address coordinates data from the Kinmen Urban Deve
 - `RESUME_FILE`: Path to the file to store processed locations.
 - `BATCH_SIZE`: Number of towns to process concurrently.
 
+## HTML Functionality
+
+The `index.html` file in this project serves as the user interface for displaying the retrieved data. It offers the following functionality:
+
+- **Bootstrap Integration**: Utilizes Bootstrap 5 for consistent styling and responsive layout.
+- **DataTables Integration**: Incorporates DataTables to enable interactive table features.
+- **Theme Detection**: Detects the system's preferred color scheme and applies it to the UI for a cohesive user experience.
+
 ## Notes
 
 - Ensure internet connectivity for the program to work.
