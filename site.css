@@ -24,19 +24,19 @@
         display: none;
     }
 
-    #dt-search-0 {
+    #my_table_wrapper .dt-search input[type="search"] {
         width: 100% !important;
-        margin-left: 0;
     }
 
-    label[for="dt-search-0"] {
+    #my_table_wrapper .dt-search label {
         display: none;
     }
 }
 
-input[type="search"] {
+#my_table_wrapper input[type="search"] {
     font-size: 16px;
     -webkit-appearance: none;
+    margin-left: 0;
 }
 
 .has-search .form-control {
