@@ -75,6 +75,9 @@
     const buildTable = function (url, columns) {
         let t = new DataTable('#my_table', {
             stateSave: true,
+            scrollX: true,
+            scrollCollapse: true,
+            scrollY: '65vh',
             responsive: {
                 details: false,
             },
@@ -110,10 +113,10 @@
                 }
                 $('#my_table_wrapper .dt-search').addClass('form-group has-search');
                 $(`<span class="form-control-feedback">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                                </svg>
-                            </span>`).insertBefore('#my_table_wrapper .dt-search input');
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                            </svg>
+                        </span>`).insertBefore('#my_table_wrapper .dt-search input');
             }
         });
         t.on('page', () => {
@@ -143,9 +146,10 @@
             render: function (data, type, row, meta) {
                 if (type === 'display') {
                     let params = {
+                        api: 1,
                         q: row['LATITUDE'] + ',' + row['LONGITUDE']
                     };
-                    let url = "https://maps.google.com/?" + $.param(params, true);
+                    let url = "https://www.google.com/maps/search/?" + $.param(params, true);
                     return '<a href="' + url + '" target="_blank">' + data + '</a>';
                 }
                 return data;
