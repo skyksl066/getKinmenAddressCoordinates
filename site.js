@@ -147,7 +147,7 @@
                 if (type === 'display') {
                     let params = {
                         api: 1,
-                        q: row['LATITUDE'] + ',' + row['LONGITUDE']
+                        query: row['LATITUDE'] + ',' + row['LONGITUDE']
                     };
                     let url = "https://www.google.com/maps/search/?" + $.param(params, true);
                     return '<a href="' + url + '" target="_blank">' + data + '</a>';
